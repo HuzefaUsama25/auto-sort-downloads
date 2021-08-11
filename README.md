@@ -1,11 +1,9 @@
 # Auto-Sort-Downloads
 
-## 1 - Script will run all time, whenever a picture is added it will place it in:
+### Script will run all time, whenever a file is downloaded it will get sorted into folders and sub folders
 
-- Whatsapp folder (For whatsapp downloaded pics) and rename according to order placed such as 1,2,3,..
-- Google Folder (For google downloaded pics)
-- And so on...
+## Setup:
 
-## 2 - Algorithm for file:
-
- - Get extension, get hosturl
+1 - Place the binary file (cleandesk.exe) in downloads folder.
+2 - Make a shortcut of this binary and place it in the startup folder.
+3 - Enjoy a clean and sorted downloads folder.
