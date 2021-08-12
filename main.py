@@ -54,6 +54,7 @@ def move_file_to_folder(file):
         "bmp": "Photos",
         "ico": "Photos",
         "svg": "Photos",
+        "webp": "Photos",
         "mp3": "Music",
         "wav": "Music",
         "wma": "Music",
