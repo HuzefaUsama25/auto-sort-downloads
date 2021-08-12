@@ -6,10 +6,8 @@ import time
 
 def get_files(directory):
     all_items = os.popen(f'dir /b "{directory}"').read().split('\n')
-    print(all_items)
     # get only files and ignore folders
     files = [i for i in all_items if "." in i]
-    print(files)
     return files
 
 # get the file extension i.e. .exe for a file
@@ -29,14 +27,11 @@ def get_file_url(file):
         raw_url = os.popen(
             f"powershell Get-Content 'Photos/{file}' -Stream Zone.Identifier").read()
 
-        print(raw_url)
-
         if "Error" in raw_url:
             return "Other"
         else:
             # clean the zone identifier to get url and clean it.
             url = raw_url.split("\n")[-2].replace("HostUrl=", "")
-            print("url")
             # get the domain name of the url. such as: google, pinterest, etc.
             domain = url.split(".")[1]
             return domain
@@ -91,7 +86,7 @@ def move_file_to_folder(file):
     extension = get_file_extension(file)
     folder_to_put_in = file_folder_map.get(extension)
 
-    print(f"{file} --> {extension} --> {folder_to_put_in}")
+    print(f"{file} --> {extension} --> {folder_to_put_in}\n")
 
     if folder_to_put_in == None:
         folder_to_put_in = "Unidentified"
@@ -104,32 +99,24 @@ def move_file_to_folder(file):
 
 def classify_files_in_folder():
     # classify files in folder according to source url.
-    print("Classifing files in folder according to source url...\n".upper()*10)
     folders_to_work_in = ["Photos", "Executables",
                           "Setups", "Music", "Videos", "Documents", "Compressed-Files"]
     for folder in folders_to_work_in:
         if folder in os.listdir(None):
-            print(f"{folder} is present.\n".upper()*10)
             files = get_files(folder)
             for file in files:
-                print(f"working with file: {file}\n".upper())
                 url = get_file_url(file)
-                print(f"url of this file is: {url}\n")
                 if url is not None:
                     if url not in os.listdir(folder):
                         os.mkdir(f"{folder}/{url}")
 
                     os.system(f'move "{folder}\\{file}" "{folder}\\{url}"')
-                if url is None:
-                    print("NOT AN INTERNET FILE")
 
 
 def main():
     while True:
         # time.sleep(0.5)
         all_files = get_files("")
-
-        print(all_files)
         try:
             ignore_files = ["unconfirmed.crdownload", "Unconfirmed.crdownload",
                             "main.py", "README.md", "Cleandesk.exe"]
@@ -143,7 +130,6 @@ def main():
         for file in all_files:
             move_file_to_folder(file)
         classify_files_in_folder()
-    print("testing")
 
 
 if __name__ == "__main__":
