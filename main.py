@@ -22,17 +22,19 @@ def get_file_extension(file):
 
 
 def get_file_url(file):
-    # get zone identifier.
-    raw_url = os.popen(
-        f"powershell Get-Content 'Photos/{file}' -Stream Zone.Identifier").read()
-    if "Error" in raw_url:
-        return "other"
-    else:
+    try:
+        # get zone identifier.
+        raw_url = os.popen(
+            f"powershell Get-Content 'Photos/{file}' -Stream Zone.Identifier").read()
+
+        print(raw_url)
         # clean the zone identifier to get url and clean it.
         url = raw_url.split("\n")[-2].replace("HostUrl=", "")
         # get the domain name of the url. such as: google, pinterest, etc.
         domain = url.split(".")[1]
         return domain
+    except Exception as e:
+        print(e)
 
 
 def move_file_to_folder(file):
@@ -84,7 +86,7 @@ def move_file_to_folder(file):
     print(folder_to_put_in)
 
     if folder_to_put_in == None:
-        folder_to_put_in = "UnIdentified"
+        folder_to_put_in = "Unidentified"
 
     if folder_to_put_in not in os.listdir():
         os.mkdir(folder_to_put_in)
@@ -105,20 +107,15 @@ def classify_photos_in_folder():
 
 def main():
     while True:
-        time.sleep(10)
+        # time.sleep(0.5)
         all_files = get_files(None)
 
         try:
-            # ignore the following files
-            # for files which are not downloaded yet
-            all_files.remove("unconfirmed.crdownload")
-            all_files.remove("Unconfirmed.crdownload")
-            # for self
-            all_files.remove("main.py")
-            all_files.remove("README.md")
-            all_files.remove("desktop.ini")
-            # for the binary.
-            all_files.remove("cleandesk.exe")
+            ignore_files = ["unconfirmed.crdownload", "Unconfirmed.crdownload",
+                            "main.py", "README.md", "desktop.ini", "Cleandesk.exe"]
+            for ignore_file in ignore_files:
+                if ignore_file in all_files:
+                    all_files.remove(ignore_files)
         except Exception as e:
             print(e)
             continue
