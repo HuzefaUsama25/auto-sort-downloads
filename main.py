@@ -6,8 +6,10 @@ import time
 
 def get_files(directory):
     all_items = os.popen(f'dir /b "{directory}"').read().split('\n')
+    print(all_items)
     # get only files and ignore folders
     files = [i for i in all_items if "." in i]
+    print(files)
     return files
 
 # get the file extension i.e. .exe for a file
@@ -28,19 +30,25 @@ def get_file_url(file):
             f"powershell Get-Content 'Photos/{file}' -Stream Zone.Identifier").read()
 
         print(raw_url)
-        # clean the zone identifier to get url and clean it.
-        url = raw_url.split("\n")[-2].replace("HostUrl=", "")
-        # get the domain name of the url. such as: google, pinterest, etc.
-        domain = url.split(".")[1]
-        return domain
+
+        if "Error" in raw_url:
+            return "Other"
+        else:
+            # clean the zone identifier to get url and clean it.
+            url = raw_url.split("\n")[-2].replace("HostUrl=", "")
+            print("url")
+            # get the domain name of the url. such as: google, pinterest, etc.
+            domain = url.split(".")[1]
+            return domain
     except Exception as e:
         print(e)
+        return "Other"
 
 
 def move_file_to_folder(file):
     # file extensions to associate with folders
     file_folder_map = {
-        "exe": "Applications & Games",
+        "exe": "Executables",
         "msi": "Setups",
         "png": "Photos",
         "jfif": "Photos",
@@ -56,6 +64,7 @@ def move_file_to_folder(file):
         "wma": "Music",
         "aac": "Music",
         "ogg": "Music",
+        "m4a": "Music",
         "mp4": "Videos",
         "webm": "Videos",
         "mov": "Videos",
@@ -73,17 +82,16 @@ def move_file_to_folder(file):
         "pptx": "Documents",
         "html": "Documents",
         "csv": "Documents",
-        "7z": "Compressed Files",
-        "zip": "Compressed Files",
-        "rar": "Compressed Files",
+        "7z": "Compressed-Files",
+        "zip": "Compressed-Files",
+        "rar": "Compressed-Files",
 
     }
 
     extension = get_file_extension(file)
-    print(extension)
-
     folder_to_put_in = file_folder_map.get(extension)
-    print(folder_to_put_in)
+
+    print(f"{file} --> {extension} --> {folder_to_put_in}")
 
     if folder_to_put_in == None:
         folder_to_put_in = "Unidentified"
@@ -94,35 +102,47 @@ def move_file_to_folder(file):
     os.system(f'move "{file}" "{folder_to_put_in}"')
 
 
-def classify_photos_in_folder():
-    # calssify photos according to source url.
-    photo_files = get_files("Photos")
-    for file in photo_files:
-        url = get_file_url(file)
-        if url not in os.listdir("Photos"):
-            os.mkdir(f"Photos/{url}")
+def classify_files_in_folder():
+    # classify files in folder according to source url.
+    print("Classifing files in folder according to source url...\n".upper()*10)
+    folders_to_work_in = ["Photos", "Executables",
+                          "Setups", "Music", "Videos", "Documents", "Compressed-Files"]
+    for folder in folders_to_work_in:
+        if folder in os.listdir(None):
+            print(f"{folder} is present.\n".upper()*10)
+            files = get_files(folder)
+            for file in files:
+                print(f"working with file: {file}\n".upper())
+                url = get_file_url(file)
+                print(f"url of this file is: {url}\n")
+                if url is not None:
+                    if url not in os.listdir(folder):
+                        os.mkdir(f"{folder}/{url}")
 
-        os.system(f'move "Photos\\{file}" "Photos\\{url}"')
+                    os.system(f'move "{folder}\\{file}" "{folder}\\{url}"')
+                if url is None:
+                    print("NOT AN INTERNET FILE")
 
 
 def main():
-    # while True:
-    #     # time.sleep(0.5)
-    #     all_files = get_files(None)
+    while True:
+        # time.sleep(0.5)
+        all_files = get_files("")
 
-    #     try:
-    #         ignore_files = ["unconfirmed.crdownload", "Unconfirmed.crdownload",
-    #                         "main.py", "README.md", "Cleandesk.exe"]
-    #         for ignore_file in ignore_files:
-    #             if ignore_file in all_files:
-    #                 all_files.remove(ignore_file)
-    #     except Exception as e:
-    #         print(e)
-    #         continue
+        print(all_files)
+        try:
+            ignore_files = ["unconfirmed.crdownload", "Unconfirmed.crdownload",
+                            "main.py", "README.md", "Cleandesk.exe"]
+            for ignore_file in ignore_files:
+                if ignore_file in all_files:
+                    all_files.remove(ignore_file)
+        except Exception as e:
+            print(e)
+            continue
 
-    #     for file in all_files:
-    #         move_file_to_folder(file)
-    #     classify_photos_in_folder()
+        for file in all_files:
+            move_file_to_folder(file)
+        classify_files_in_folder()
     print("testing")
 
 
