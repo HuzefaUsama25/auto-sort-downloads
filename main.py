@@ -5,7 +5,7 @@ import time
 
 
 def get_files(directory):
-    all_items = os.listdir(directory)
+    all_items = os.popen(f'dir /b "{directory}"').read().split('\n')
     # get only files and ignore folders
     files = [i for i in all_items if "." in i]
     return files
@@ -106,23 +106,24 @@ def classify_photos_in_folder():
 
 
 def main():
-    while True:
-        # time.sleep(0.5)
-        all_files = get_files(None)
+    # while True:
+    #     # time.sleep(0.5)
+    #     all_files = get_files(None)
 
-        try:
-            ignore_files = ["unconfirmed.crdownload", "Unconfirmed.crdownload",
-                            "main.py", "README.md", "desktop.ini", "Cleandesk.exe"]
-            for ignore_file in ignore_files:
-                if ignore_file in all_files:
-                    all_files.remove(ignore_files)
-        except Exception as e:
-            print(e)
-            continue
+    #     try:
+    #         ignore_files = ["unconfirmed.crdownload", "Unconfirmed.crdownload",
+    #                         "main.py", "README.md", "Cleandesk.exe"]
+    #         for ignore_file in ignore_files:
+    #             if ignore_file in all_files:
+    #                 all_files.remove(ignore_file)
+    #     except Exception as e:
+    #         print(e)
+    #         continue
 
-        for file in all_files:
-            move_file_to_folder(file)
-        classify_photos_in_folder()
+    #     for file in all_files:
+    #         move_file_to_folder(file)
+    #     classify_photos_in_folder()
+    print("testing")
 
 
 if __name__ == "__main__":
